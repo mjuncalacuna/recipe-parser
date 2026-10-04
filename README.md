@@ -31,4 +31,13 @@ python run.py --all           # all 48
 python run.py --adapt "milk" some_recipe.txt
 ```
 
-Every run calls the Claude API and costs money. `--all` makes 48 calls.
+With the default backend every run calls the Claude API and costs money. `--all` makes 48 calls.
+
+### Without spending: the Claude Code backend
+
+```bash
+RECIPES_BACKEND=claude-code python run.py --all
+RECIPES_BACKEND=claude-code RECIPES_CLI_MODEL=haiku python run.py --all
+```
+
+Each recipe goes through `claude -p` with the same system prompt, no tools and no project settings, from an empty directory, on a Claude subscription. No SDK or API key needed (the key is removed from the environment so `claude -p` cannot fall back to billing the API). It measures the prompt and the model, not this exact code path: the prefill, `temperature` and retries do not apply. The cost it prints is Claude Code's estimate of what the same calls would cost on the API, slightly high because the CLI adds about 550 tokens of its own context per call.
